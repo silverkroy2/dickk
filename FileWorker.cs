@@ -8,7 +8,7 @@ namespace dick
 {
     public static class FileWorker
     {
-        // Сериализация на Newtonsoft
+        // Сериализация на Newtonsoft и запись в файл
         public static void Serialize<T>(T objects, string path)
         {
             try
@@ -23,7 +23,7 @@ namespace dick
         }
 
 
-        // Десериализация на Newtonsoft
+        // извлечение из файла и Десериализация на Newtonsoft
         public static T Deserialize<T>(string path) where T : new()
         {
             try

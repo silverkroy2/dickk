@@ -65,6 +65,7 @@
     <Compile Include="Chat.cs" />
     <Compile Include="FileWorker.cs" />
     <Compile Include="Manage.cs" />
+    <Compile Include="TextManager.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

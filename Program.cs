@@ -21,20 +21,24 @@ namespace dick
     {
        
         private static ITelegramBotClient _botClient;
-        
 
-        //private static readonly string _telegramApi = "1948067867:AAH4nQUD9h0oy5_ino9VL9DOum_ZS3_6u_8";  // мой бот
-        private static readonly string _telegramApi = "7065692826:AAHDB7nzs5WiMxaoiRm8tFiCQc5bb1kvY48";
+
+        private static readonly string _telegramApi = "6242343914:AAEWK67YEb7fngOTlhxs5UEh1tpgu7hdCOY";  // ГАЧА БОТ
+        //private static readonly string _telegramApi = "7065692826:AAHDB7nzs5WiMxaoiRm8tFiCQc5bb1kvY48";  // БОТ ПИСЬКИ
 
         private static async Task Main()
         {
+            // есть ли папка с данными
             if (!Directory.Exists(@"data\"))
             {
                 Directory.CreateDirectory(@"data\");
             }
 
+            // инициализация класса менеджера
             Manage manage = new();
+            
 
+            // инициализация бота
             _botClient = new TelegramBotClient(_telegramApi);//use telegram api
 
             CancellationTokenSource cts = new();
@@ -52,8 +56,7 @@ namespace dick
             );
             var me = await _botClient.GetMeAsync();
 
-            //Console.WriteLine($"Start listening for @{me.Username}");
-            //Console.ReadLine();
+            // самая конченая реализация цикла для проверки времени суток и когда обновлять бота
             while (true)
             {
                 if (DateTime.Now.Hour == 4 && DateTime.Now.Minute == 0)
@@ -64,6 +67,7 @@ namespace dick
                 await Task.Delay(1000);
             }
 
+            // прием сообщений от бота
             async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
             {
                 // Only process Message updates: https://core.telegram.org/bots/api#message
@@ -73,21 +77,32 @@ namespace dick
                 if (message.Text is not { } messageText)
                     return;
 
+                // благодаря этому бот работает только в групах а не в личных чатах
                 if (message.Chat.Id < 0 && message.Text.Contains("/"))
                 {
-                    // Echo received message text
-                    Message sentMessage = await botClient.SendTextMessageAsync(
-                        chatId: message.Chat.Id,
-                        text: manage.ReceiveMessage(message),
-                        cancellationToken: cancellationToken,
-                        replyToMessageId: message.MessageId);
-                    await manage.SaveAll();
+                    try
+                    {
+                        // Echo received message text
+                        Message sentMessage = await botClient.SendTextMessageAsync(
+                            chatId: message.Chat.Id,
+                            text: manage.ReceiveMessage(message),
+                            cancellationToken: cancellationToken,
+                            replyToMessageId: message.MessageId,
+                            parseMode: ParseMode.Html);
+                        await manage.SaveAll();
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    
                 }
                 
 
                 
             }
 
+            // обработчик ошибок бота?
             Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
             {
                 var ErrorMessage = exception switch
